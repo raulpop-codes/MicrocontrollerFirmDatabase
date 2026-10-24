@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" width="1200" height="320" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0B2018"/>
+      <stop offset="55%" stop-color="#113524"/>
+      <stop offset="100%" stop-color="#0D2B1F"/>
+    </linearGradient>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.4" fill="#3FB27F" fill-opacity="0.16"/>
+    </pattern>
+    <clipPath id="clip"><rect width="1200" height="320" rx="16"/></clipPath>
+  </defs>
+
+  <g clip-path="url(#clip)">
+    <rect width="1200" height="320" fill="url(#bg)"/>
+    <rect width="1200" height="320" fill="url(#dots)"/>
+
+    <!-- schema graph -->
+    <g stroke="#2A7D5A" stroke-opacity="0.6" stroke-width="1.6" fill="none">
+      <path d="M 962 112 H 1016 V 160"/>
+      <path d="M 962 160 H 1016"/>
+      <path d="M 962 212 H 1016 V 168"/>
+      <path d="M 1092 160 H 1130 V 112 H 1150"/>
+      <path d="M 1092 168 H 1130 V 212 H 1150"/>
+    </g>
+
+    <!-- central table -->
+    <g>
+      <rect x="1016" y="128" width="76" height="64" rx="8" fill="#0E2A1F" stroke="#3FB27F" stroke-opacity="0.7" stroke-width="2"/>
+      <path d="M 1016 146 H 1092" stroke="#3FB27F" stroke-opacity="0.5" stroke-width="1.4"/>
+      <g fill="#3FB27F" fill-opacity="0.45">
+        <rect x="1026" y="156" width="42" height="5" rx="2.5"/>
+        <rect x="1026" y="170" width="54" height="5" rx="2.5"/>
+      </g>
+    </g>
+
+    <!-- satellite tables -->
+    <g>
+      <rect x="892" y="86" width="70" height="52" rx="7" fill="#0E2A1F" stroke="#3FB27F" stroke-opacity="0.4" stroke-width="2"/>
+      <rect x="892" y="134" width="70" height="52" rx="7" fill="#0E2A1F" stroke="#3FB27F" stroke-opacity="0.4" stroke-width="2"/>
+      <rect x="892" y="186" width="70" height="52" rx="7" fill="#0E2A1F" stroke="#3FB27F" stroke-opacity="0.4" stroke-width="2"/>
+      <rect x="1150" y="86" width="60" height="52" rx="7" fill="#0E2A1F" stroke="#3FB27F" stroke-opacity="0.4" stroke-width="2"/>
+      <rect x="1150" y="186" width="60" height="52" rx="7" fill="#0E2A1F" stroke="#3FB27F" stroke-opacity="0.4" stroke-width="2"/>
+    </g>
+    <g fill="#2A7D5A" fill-opacity="0.8">
+      <rect x="902" y="100" width="38" height="4" rx="2"/>
+      <rect x="902" y="112" width="26" height="4" rx="2"/>
+      <rect x="902" y="148" width="38" height="4" rx="2"/>
+      <rect x="902" y="160" width="26" height="4" rx="2"/>
+      <rect x="902" y="200" width="38" height="4" rx="2"/>
+      <rect x="902" y="212" width="26" height="4" rx="2"/>
+      <rect x="1160" y="100" width="32" height="4" rx="2"/>
+      <rect x="1160" y="112" width="22" height="4" rx="2"/>
+      <rect x="1160" y="200" width="32" height="4" rx="2"/>
+      <rect x="1160" y="212" width="22" height="4" rx="2"/>
+    </g>
+
+    <rect x="80" y="68" width="64" height="4" rx="2" fill="#3FB27F"/>
+
+    <text x="80" y="140" font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="50" font-weight="700" fill="#FFFFFF" letter-spacing="-1">Microcontroller</text>
+    <text x="80" y="192" font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="50" font-weight="700" fill="#3FB27F" letter-spacing="-1">Distributor Database</text>
+
+    <text x="80" y="232" font-family="Segoe UI, Helvetica Neue, Helvetica, Arial, sans-serif" font-size="18" fill="#8FBFA9">17 tables in 3NF &#183; catalog, suppliers, quality testing and sales</text>
+
+    <text x="80" y="270" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="15" fill="#5E9078" letter-spacing="0.5">MySQL  &#183;  CHECK + REGEXP  &#183;  triggers  &#183;  reporting views</text>
+
+    <rect x="0.75" y="0.75" width="1198.5" height="318.5" rx="16" stroke="#2A7D5A" stroke-opacity="0.5" stroke-width="1.5"/>
+  </g>
+</svg>

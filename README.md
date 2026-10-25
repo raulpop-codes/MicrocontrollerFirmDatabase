@@ -7,6 +7,7 @@
   <img src="https://img.shields.io/badge/MariaDB%2010.2.1+-0E2A1F?style=for-the-badge&logo=mariadb&logoColor=3FB27F">
   <img src="https://img.shields.io/badge/17%20tables-0E2A1F?style=for-the-badge&logo=databricks&logoColor=3FB27F">
   <img src="https://img.shields.io/badge/3NF-0E2A1F?style=for-the-badge&logo=diagramsdotnet&logoColor=3FB27F">
+  <a href="https://github.com/raulpop-codes/MicrocontrollerFirmDatabase/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/raulpop-codes/MicrocontrollerFirmDatabase/ci.yml?style=for-the-badge&label=CI&labelColor=0E2A1F&color=0E2A1F&logo=githubactions&logoColor=3FB27F"></a>
 </p>
 
 A relational database modeling the operations of a fictional microcontroller distributor: manufacturers, suppliers, product catalog (microcontrollers, sensors, firmware, communication protocols), quality testing, and the sales pipeline (customers, employees, orders, shipping).
@@ -19,7 +20,7 @@ A relational database modeling the operations of a fictional microcontroller dis
 
 ---
 
-**Contents** · [Highlights](#highlights) · [Diagrams](#entity-relationship-diagrams) · [Schema](#schema-overview) · [Data integrity](#data-integrity-by-design) · [Views](#views) · [Trigger](#trigger-trg_defaultcategorydescription) · [Queries](#example-queries) · [Setup](#setup)
+**Contents** · [Highlights](#highlights) · [Diagrams](#entity-relationship-diagrams) · [Schema](#schema-overview) · [Data integrity](#data-integrity-by-design) · [Verification](#verification) · [Views](#views) · [Trigger](#trigger-trg_defaultcategorydescription) · [Queries](#example-queries) · [Setup](#setup)
 
 ---
 
@@ -29,7 +30,7 @@ A relational database modeling the operations of a fictional microcontroller dis
 - **3 many-to-many relationships** resolved through junction tables: `MicrocontrollerSensors` (microcontrollers ↔ sensors), `MicrocontrollerProtocols` (microcontrollers ↔ communication protocols), and `OrderDetails` (orders ↔ microcontrollers)
 - Primary keys, foreign keys, `UNIQUE` constraints, and `CHECK` constraints enforcing real business rules — price ranges, valid phone formats, valid architecture names, salary bands, date sanity
 - A `BEFORE INSERT` trigger and 4 views, including one using `GROUP_CONCAT` to flatten a many-to-many relationship into a single readable column
-- Every script, constraint, the trigger, and all views were run and verified against a live MySQL/MariaDB instance before being published here
+- Every script is loaded into a clean MySQL 8 instance on **every push**, and the integrity rules are then probed automatically — see [Verification](#verification)
 
 ## Entity-Relationship Diagrams
 
@@ -63,6 +64,30 @@ The schema is intentionally strict: validation lives in the database itself, not
 This is a deliberate defense-in-depth choice: any application built on top of this database gets an extra layer of protection against bad data, since invalid rows are rejected by the schema itself even if a bug, a different client, or a direct SQL connection bypasses the application's own validation logic.
 
 > **One trade-off worth knowing:** a few date-based rules (e.g. "not in the future") are enforced at the application layer rather than as `CHECK` constraints, since SQL `CHECK` expressions must be deterministic and can't reference functions like `CURDATE()` / `NOW()`. Everything else — ranges, formats, and enumerations — is enforced directly in the schema.
+
+## Verification
+
+Loading without errors only proves the SQL parses. On every push, GitHub Actions
+spins up a clean MySQL 8 container, runs `01` through `06` in order, executes the
+analytical queries in `07`, and then runs [`test/schema_checks.sh`](test/schema_checks.sh)
+— 19 checks that probe whether the schema actually enforces what this README claims.
+
+```bash
+MYSQL_PWD=root ./test/schema_checks.sh
+```
+
+| Group | What is checked |
+|---|---|
+| Objects | 17 base tables, 4 views, 1 trigger, at least 10 foreign keys |
+| Seed data | microcontrollers, manufacturers, orders and order lines all loaded |
+| `CHECK` constraints | a `FoundedYear` of 1850 or 2200, a `Website` without `https://www.`, and a `Phone` that breaks the `REGEXP` must each be **rejected** |
+| Keys | a duplicate `CompanyName` must fail the `UNIQUE`, and a microcontroller pointing at a missing manufacturer must fail the foreign key |
+| Trigger | a category inserted with no description comes back as `UNKNOWN` |
+
+The constraint checks are deliberately inverted: they insert bad data and fail the
+build if the database *accepts* it. A `CHECK` that silently stops being enforced — on
+an older MySQL, after a careless `ALTER`, or on a different engine — turns the run red
+instead of going unnoticed.
 
 ## Views
 

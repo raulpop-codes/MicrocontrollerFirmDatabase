@@ -55,7 +55,7 @@ SELECT
     fv.VersionName AS FirmwareVersion,
     fv.StabilityStatus AS StabilityStatus,
     fv.ReleaseDate AS ReleaseDate,
-    DATEDIFF(day, fv.ReleaseDate, GETDATE()) AS DaysSinceRelease
+    DATEDIFF(CURDATE(), fv.ReleaseDate) AS DaysSinceRelease
 FROM FirmwareVersions fv
 JOIN Microcontrollers m ON fv.MicrocontrollerID = m.MicrocontrollerID
 WHERE fv.StabilityStatus IN ('Stable', 'Beta')

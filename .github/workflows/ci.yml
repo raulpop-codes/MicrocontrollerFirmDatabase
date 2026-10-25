@@ -8,23 +8,49 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: Build (Java 21, Maven)
+  schema:
+    name: Load schema and verify integrity rules
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+
+    env:
+      MYSQL_PWD: root
+
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '21'
-          cache: maven
+      - name: Install MySQL client
+        run: sudo apt-get update && sudo apt-get install -y mysql-client
 
-      # The pom lives in Code/, not at the repo root.
-      # `package` compiles every source file and builds the shaded jar, so it
-      # proves the project resolves and builds from nothing but the repo.
-      # Once there are tests under Code/src/test, switch this to `verify`
-      # and the same job starts failing on a broken test.
-      - name: Build and package
-        working-directory: Code
-        run: mvn -B package
+      # Each file carries its own USE statement, so no database is passed here.
+      # They run in order: database, tables, constraints, data, trigger, views.
+      - name: Load the schema
+        run: |
+          for f in 01_create_database.sql \
+                   02_create_tables.sql \
+                   03_constraints.sql \
+                   04_inserts.sql \
+                   05_triggers.sql \
+                   06_views.sql; do
+            echo "--- $f"
+            mysql -h 127.0.0.1 -uroot < "$f"
+          done
+
+      # Proves the reporting queries still parse and run against the schema.
+      - name: Run the reporting queries
+        run: mysql -h 127.0.0.1 -uroot < 07_queries.sql > /dev/null
+
+      - name: Verify integrity rules
+        run: bash test/schema_checks.sh
